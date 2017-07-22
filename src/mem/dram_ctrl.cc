@@ -170,6 +170,23 @@ DRAMCtrl::DRAMCtrl(const DRAMCtrlParams* p) :
                   tRRD_L, tRRD, bankGroupsPerRank);
         }
     }
+    //pgs
+    sat_table = (uint8_t**)malloc(sizeof(uint8_t*)*ranksPerChannel);
+    prev_row = (uint8_t**)malloc(sizeof(uint8_t*)*ranksPerChannel);
+    for(int i = 0; i < ranksPerChannel; i++)
+    {
+         sat_table[i] = (uint8_t*)malloc(sizeof(uint8_t)*banksPerRank);
+         prev_row[i] = (uint8_t*)malloc(sizeof(uint8_t)*banksPerRank);
+    }
+    //initalize
+    for(int i = 0; i < ranksPerChannel; i++)
+    {
+        for(int j = 0; j<banksPerRank; j++)
+        {
+              sat_table[i][j] = 0;
+              prev_row[i][j] = 0;
+        }
+    }
 
 }
 
@@ -1076,6 +1093,22 @@ DRAMCtrl::doDRAMAccess(DRAMPacket* dram_pkt)
     // respect any constraints on the command (e.g. tRCD or tCCD)
     Tick cmd_at = std::max(bank.colAllowedAt, curTick());
 
+    //update sat_table
+    if(prev_row[dram_pkt->rank][dram_pkt->bank] == 0)
+    {
+        //init do not anything
+    }
+    else if(dram_pkt->row == prev_row[dram_pkt->rank][dram_pkt->bank])
+    {
+        if(sat_table[dram_pkt->rank][dram_pkt->bank] < 3)
+            sat_table[dram_pkt->rank][dram_pkt->bank]++;
+    }
+    else
+    {
+        if(sat_table[dram_pkt->rank][dram_pkt->bank] > 0)
+            sat_table[dram_pkt->rank][dram_pkt->bank] --;
+    }
+
     // Determine the access latency and update the bank state
     if (bank.openRow == dram_pkt->row) {
         // nothing to do
@@ -1156,6 +1189,15 @@ DRAMCtrl::doDRAMAccess(DRAMPacket* dram_pkt)
     // increment the bytes accessed and the accesses per row
     bank.bytesAccessed += burstSize;
     ++bank.rowAccesses;
+
+    //pgs
+    if(sat_table[dram_pkt->rank][dram_pkt->bank] > 1)
+        pageMgmt = Enums::open_adaptive;
+    else
+        pageMgmt = Enums::close_adaptive;
+
+    //update row
+    prev_row[dram_pkt->rank][dram_pkt->bank] = dram_pkt->row ;
 
     // if we reached the max, then issue with an auto-precharge
     bool auto_precharge = pageMgmt == Enums::close ||

@@ -97,7 +97,9 @@ class DRAMCtrl : public AbstractMemory
 {
 
   private:
-
+    //pgs
+    uint8_t** sat_table;
+    uint32_t** prev_row;
     // For now, make use of a queued slave port to avoid dealing with
     // flow control for the responses being sent back
     class MemoryPort : public QueuedSlavePort
