@@ -1,0 +1,35 @@
+MAIN_printInfo:
+	grid size      : 100 x 100 x 130 = 1.30 * 10^6 Cells
+	nTimeSteps     : 20
+	result file    : reference.dat
+	action         : nothing
+	simulation type: channel flow
+	obstacle file  : 100_100_130_cf_a.of
+
+
+MCF SPEC CPU2006 version 1.10
+Copyright (c) 1998-2000 Zuse Institut Berlin (ZIB)
+ Welcome to GemsFDTD
+
+Copyright (c) 2000-2002 Andreas Loebel & ZIB
+Copyright (c) 2003-2005 Andreas Loebel
+
+ *******PROBLEMSIZE*************************
+ problemsize:         210         210         210
+ *******CELLSIZE****************************
+ dx:   1.0000000000000000E-002
+ dy:   1.0000000000000000E-002
+ dz:   1.0000000000000000E-002
+ *******NSTEP*******************************
+ nstep:           2
+ *******PLANEWAVE*************************
+ wavedir:   0.0000000000000000        0.0000000000000000        1.0000000000000000     
+ Epol:   1.0000000000000000        0.0000000000000000       -0.0000000000000000     
+ PulseType:           6
+ param:   1.2000000000000000E-009   2.0000000000000001E-010  -1111.0999999999999     
+ X0:   0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ Disttobound:          10
+nodes                      : 5985
+active arcs                : 102404
+ ***************PEC*************************
+ Number of components:        28686
