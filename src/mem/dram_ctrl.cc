@@ -170,13 +170,19 @@ DRAMCtrl::DRAMCtrl(const DRAMCtrlParams* p) :
                   tRRD_L, tRRD, bankGroupsPerRank);
         }
     }
+}
+
+void
+DRAMCtrl::init()
+{
+    AbstractMemory::init();
     //pgs
     sat_table = (uint8_t**)malloc(sizeof(uint8_t*)*ranksPerChannel);
-    prev_row = (uint8_t**)malloc(sizeof(uint8_t*)*ranksPerChannel);
+    prev_row = (uint32_t**)malloc(sizeof(uint32_t*)*ranksPerChannel);
     for(int i = 0; i < ranksPerChannel; i++)
     {
          sat_table[i] = (uint8_t*)malloc(sizeof(uint8_t)*banksPerRank);
-         prev_row[i] = (uint8_t*)malloc(sizeof(uint8_t)*banksPerRank);
+         prev_row[i] = (uint32_t*)malloc(sizeof(uint32_t)*banksPerRank);
     }
     //initalize
     for(int i = 0; i < ranksPerChannel; i++)
@@ -188,12 +194,6 @@ DRAMCtrl::DRAMCtrl(const DRAMCtrlParams* p) :
         }
     }
 
-}
-
-void
-DRAMCtrl::init()
-{
-    AbstractMemory::init();
 
    if (!port.isConnected()) {
         fatal("DRAMCtrl %s is unconnected!\n", name());
